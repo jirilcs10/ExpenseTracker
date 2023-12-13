@@ -44,8 +44,9 @@ async function submitForm(e)
     let resp;
     try
     {
-        
-    resp =await axios.post(`http://localhost:3000/expense/add`,obj); 
+        const token=localStorage.getItem('token'); 
+        console.log(token);
+    resp =await axios.post(`http://localhost:3000/expense/add`,obj,{headers:{"Authorization":token}}); 
     
     console.log(resp.data.newExpense);
     showOnScreen(resp.data.newExpense);
@@ -64,7 +65,8 @@ async function submitForm(e)
 
 window.addEventListener("DOMContentLoaded",async()=>{
     try{
-    let res=await axios.get('http://localhost:3000/expense');
+        const token=localStorage.getItem('token');
+    let res=await axios.get('http://localhost:3000/expense',{headers:{"Authorization":token}});
         console.log(res);
         for(var i=0;i<res.data.newExpense.length;i++)
         showOnScreen(res.data.newExpense[i]);
@@ -78,7 +80,7 @@ window.addEventListener("DOMContentLoaded",async()=>{
 itli.addEventListener("click", removeItem);
 async function removeItem(e){
     e.preventDefault();
-
+    const token=localStorage.getItem('token'); 
     form.classList.remove('was-validated')
     if(e.target.classList.contains('del'))
     {
@@ -87,7 +89,7 @@ async function removeItem(e){
             const id=li.childNodes[6].textContent;
             console.log(id);
             try{
-            await axios.get(`http://localhost:3000/expense/delete/${id}`);
+            await axios.get(`http://localhost:3000/expense/delete/${id}`,{headers:{"Authorization":token}});
             itli.removeChild(li); 
             }
             catch(err)

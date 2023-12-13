@@ -9,7 +9,7 @@ exports.postExp = async (req,res,next)=>{
   console.log(description);
   console.log(category);
 
-  const data=await Expense.create({
+  const data=await req.user.createExpense({
     amount:amount,
     description:description,
     category:category
@@ -26,13 +26,13 @@ exports.getAllExp=async (req,res,next)=>{
     
     try{
         
-        const data=await Expense.findAll();
+        const data=await Expense.findAll({where:{userId:req.user.id}});
         console.log(data);
         res.status(201).json({newExpense:data})
       }
       catch(err)
       {
-        res.status(505).json({eror:err});
+        res.status(505).json({error:err});
       }
  }
  
@@ -41,7 +41,10 @@ exports.getAllExp=async (req,res,next)=>{
 
     try{
       const uid=req.params.id;
-      await Expense.destroy({where:{id:uid}})
+      const user=await req.user.getExpenses({where:{id:uid}});
+      console.log(1121);
+      console.log(user);
+      await user[0].destroy()
       console.log(uid);
       res.status(201).json("success");
     }

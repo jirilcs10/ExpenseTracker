@@ -1,5 +1,13 @@
 const User = require('../models/users');
 const bcrypt=require('bcrypt');
+const jwt=require('jsonwebtoken')
+
+function generateAccessToken(id)
+{
+  return jwt.sign({userId:id},'somerandom');
+}
+
+
 exports.signUp = async (req,res,next)=>{
   try{
   const name = req.body.name;
@@ -20,7 +28,7 @@ catch(err)
     else
     res.status(505).json(err);
 }
- };
+};
 
  exports.userLogin = async (req,res,next)=>{
   let data;
@@ -35,13 +43,17 @@ catch(err)
   }
 
   data=await User.findOne({ where: { email:email } });
+  console.log(1321);
+  console.log(data.id);
   if(data)
   {
       bcrypt.compare(password,data.password,(error,result)=>{
         if(error)
         throw new Error("Something went wrong");
         if(result===true)
-        return res.status(201).json("User Logged in Successfully");
+        {
+        return res.status(201).json({message:"User Logged in Successfully",token:generateAccessToken(data.id)});
+        }
         else
         return res.status(401).json("Password does not match");
       });
