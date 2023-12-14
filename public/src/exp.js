@@ -33,8 +33,12 @@ function checkPremium(){
        div.appendChild(span);
        ldbutton.onclick=async function(e){
         const res=await axios.get('http://localhost:3000/leaderboard',{headers:{"Authorization":token}});
-      
-        showLeaderBoard(res.data.allExpense);
+        ldit.replaceChildren(" ");
+        for(var i=0;i<res.data.allExpense.length;i++)
+        {
+        console.log(res.data.allExpense[i]);
+        showLeaderBoard(res.data.allExpense[i]);
+        }
        }
     }
 }
