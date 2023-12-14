@@ -1,8 +1,58 @@
+
+
 const form=document.getElementById("addForm");
 let itli=document.getElementById("items");
+let ldit=document.getElementById("lditems");
 form.addEventListener("submit",submitForm);
 
 
+function parseJwt(token) {
+        if (!token) {
+          return;
+        }
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url.replace("-", "+").replace("_", "/");
+        return JSON.parse(window.atob(base64));
+      
+}
+function checkPremium(){
+    const token=localStorage.getItem('token');
+    const user=parseJwt(token);
+    if(user.isPremiumUser)
+    {
+       const div=document.getElementById('premiumdiv');
+       const button=document.getElementById('rzp-premium');
+       const ldbutton=document.createElement("button");
+       ldbutton.id="leader";
+       ldbutton.appendChild(document.createTextNode("Show LeaderBoard"));
+       button.parentNode.removeChild(button);
+       const span=document.createElement('span');
+       span.appendChild(document.createTextNode("Premium User"));
+       span.style.float="right";
+       span.appendChild(ldbutton);
+       div.appendChild(span);
+       ldbutton.onclick=async function(e){
+        const res=await axios.get('http://localhost:3000/leaderboard',{headers:{"Authorization":token}});
+        showLeaderBoard(res.data.allExpense);
+       }
+    }
+}
+function showLeaderBoard(appdata){
+    const li=document.createElement("li");
+
+    li.className="list-group-item";
+    
+    li.appendChild(document.createTextNode(appdata.amount));
+    li.appendChild(document.createTextNode("-"));
+    li.appendChild(document.createTextNode(appdata.description));
+    li.appendChild(document.createTextNode("-"));
+    li.appendChild(document.createTextNode(appdata.category));
+    li.appendChild(document.createTextNode("-"));
+    li.appendChild(document.createTextNode(appdata.name));
+
+
+    ldit.appendChild(li);
+}
 function showOnScreen(appdata){
     const li=document.createElement("li");
     const btn=document.createElement("button");
@@ -66,6 +116,7 @@ async function submitForm(e)
 window.addEventListener("DOMContentLoaded",async()=>{
     try{
         const token=localStorage.getItem('token');
+        checkPremium();
     let res=await axios.get('http://localhost:3000/expense',{headers:{"Authorization":token}});
         console.log(res);
         for(var i=0;i<res.data.newExpense.length;i++)
@@ -109,14 +160,17 @@ document.getElementById('rzp-premium').onclick=async function(e){
     const token=localStorage.getItem('token');
     const res=await axios.get('http://localhost:3000/purchase/buypremium',{headers:{"Authorization":token}});
     console.log(res.data);
+    let resp;
     var options={
         'key':res.data.key_id,
         'order_id':res.data.order.id,
         'handler':async function(response){
-            await axios.post('http://localhost:3000/purchase/updatetransactionstatus',{
+           resp = await axios.post('http://localhost:3000/purchase/updatetransactionstatus?success=true',{
                 orderId:options.order_id,
                 paymentId:response.razorpay_payment_id
             },{headers:{"Authorization":token}})
+            localStorage.setItem('token',resp.data.token)
+            checkPremium();
             alert("You are upgraded to premium");
         }
     }
@@ -125,9 +179,8 @@ document.getElementById('rzp-premium').onclick=async function(e){
     e.preventDefault();
     rzp1.on('payment.failed',async function(res){
         console.log(res);
-        await axios.post('http://localhost:3000/purchase/updatetransactionstatus?failure="true"',{
-            orderId:options.order_id,
-            paymentId:response.razorpay_payment_id
+        await axios.post('http://localhost:3000/purchase/updatetransactionstatus?success=false',{
+            orderId:options.order_id
         },{headers:{"Authorization":token}})
         alert('Something went wrong');
     })

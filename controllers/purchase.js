@@ -1,5 +1,6 @@
 const Razorpay=require('razorpay');
 const Order=require('../models/orders');
+const accessToken=require('../util/accesstoken');
 
 const buyPremium=async(req,res)=>{
     try{
@@ -24,21 +25,25 @@ const buyPremium=async(req,res)=>{
 
 const updateTransactionStatus=async(req,res)=>{
     try{
-        const {paymentId,orderId}=req.body;
-        console.log(req.user.failure);
-        if(req.query.failure)
-        {
-            const order=await Order.findOne({where:{orderid:orderId}})
-            await Promise.all([order.update({status:'Failed'}),req.user.update({ispremiumuser:false})]);
-            return res.status(202).json({success:true,message:'Transaction Failed'});
-        }
-        else
-        {
         
+        console.log(req.query.success);
+        if(req.query.success=="true")
+        {
+        const {paymentId,orderId}=req.body;
         console.log(paymentId);
         const order=await Order.findOne({where:{orderid:orderId}})
         await Promise.all([order.update({paymentid:paymentId,status:'SUCCESSFUL'}),req.user.update({ispremiumuser:true})]);
-        return res.status(202).json({success:true,message:'Transaction successfull'});
+        const data=await req.user.get();
+        console.log(data);
+        return res.status(202).json({success:true,message:'Transaction successfull',token:accessToken.generateAccessToken(data.id,data.ispremiumuser)});
+        }
+        else
+        {
+            const {orderId}=req.body;
+            const order=await Order.findOne({where:{orderid:orderId}})
+            await Promise.all([order.update({status:'Failed'}),req.user.update({ispremiumuser:false})]);
+            return res.status(202).json({success:false,message:'Transaction Failed'});
+        
         }
     }
 catch(err)
