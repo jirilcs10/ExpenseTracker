@@ -7,7 +7,7 @@ exports.getLeaderBoard=async (req,res,next)=>{
     
     try{
         
-        const data = await sequelize.query("SELECT name,coalesce(sum(amount),0) as total FROM users left join expenses on users.id=expenses.userId group by users.id order by total desc ;", { type: QueryTypes.SELECT });
+        const data = await req.user.get({attributes:('name','totalexpense')});
         console.log(data);
         res.status(201).json({allExpense:data})
       }

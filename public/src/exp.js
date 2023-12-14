@@ -33,11 +33,8 @@ function checkPremium(){
        div.appendChild(span);
        ldbutton.onclick=async function(e){
         const res=await axios.get('http://localhost:3000/leaderboard',{headers:{"Authorization":token}});
-        for(var i=0;i<res.data.allExpense.length;i++)
-        {
-        console.log(res.data.allExpense[i]);
-        showLeaderBoard(res.data.allExpense[i]);
-        }
+      
+        showLeaderBoard(res.data.allExpense);
        }
     }
 }
@@ -48,7 +45,7 @@ function showLeaderBoard(appdata){
     li.appendChild(document.createTextNode("Name: "));
     li.appendChild(document.createTextNode(appdata.name));
     li.appendChild(document.createTextNode(" Total Expense: "));
-    li.appendChild(document.createTextNode(appdata.total));
+    li.appendChild(document.createTextNode(appdata.totalexpense));
     
 
 

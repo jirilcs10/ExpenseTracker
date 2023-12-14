@@ -1,4 +1,5 @@
 const Expense = require('../models/expenses');
+const sequelize = require('../util/databases');
 
 exports.postExp = async (req,res,next)=>{
   try{
@@ -14,10 +15,20 @@ exports.postExp = async (req,res,next)=>{
     description:description,
     category:category
   });
+  console.log(data.amount);
+ 
+  const user=await req.user.get();
+  console.log(user.totalexpense);
+  const value=parseFloat(user.totalexpense)+parseFloat(data.amount);
+  console.log(value);
+  await req.user.update({
+    totalexpense:value
+  })
   res.status(201).json({newExpense:data});
 }
 catch(err)
 {
+    console.log(err);
     res.status(505).json({error:err});
 }
 };
