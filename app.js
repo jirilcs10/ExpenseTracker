@@ -12,7 +12,8 @@ const Order=require('./models/orders')
 
 const userRoutes = require('./routes/userroute');
 const expenseRoutes = require('./routes/expenseroute');
-const purchaseRoutes=require('./routes/purchaseroute')
+const purchaseRoutes=require('./routes/purchaseroute');
+const leaderRoutes=require('./routes/premiumroute');
 
 app.use(bodyParser.json({ extended: false }));
   
@@ -25,6 +26,7 @@ User.hasMany(Order);
 app.use(userRoutes);
 app.use(expenseRoutes);
 app.use("/purchase",purchaseRoutes);
+app.use(leaderRoutes);
 
 sequelize.sync().then(result=>{
     app.listen(3000);

@@ -33,7 +33,11 @@ function checkPremium(){
        div.appendChild(span);
        ldbutton.onclick=async function(e){
         const res=await axios.get('http://localhost:3000/leaderboard',{headers:{"Authorization":token}});
-        showLeaderBoard(res.data.allExpense);
+        for(var i=0;i<res.data.allExpense.length;i++)
+        {
+        console.log(res.data.allExpense[i]);
+        showLeaderBoard(res.data.allExpense[i]);
+        }
        }
     }
 }
@@ -41,14 +45,11 @@ function showLeaderBoard(appdata){
     const li=document.createElement("li");
 
     li.className="list-group-item";
-    
-    li.appendChild(document.createTextNode(appdata.amount));
-    li.appendChild(document.createTextNode("-"));
-    li.appendChild(document.createTextNode(appdata.description));
-    li.appendChild(document.createTextNode("-"));
-    li.appendChild(document.createTextNode(appdata.category));
-    li.appendChild(document.createTextNode("-"));
+    li.appendChild(document.createTextNode("Name: "));
     li.appendChild(document.createTextNode(appdata.name));
+    li.appendChild(document.createTextNode(" Total Expense: "));
+    li.appendChild(document.createTextNode(appdata.total));
+    
 
 
     ldit.appendChild(li);
