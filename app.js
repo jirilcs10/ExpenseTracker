@@ -14,6 +14,7 @@ const userRoutes = require('./routes/userroute');
 const expenseRoutes = require('./routes/expenseroute');
 const purchaseRoutes=require('./routes/purchaseroute');
 const leaderRoutes=require('./routes/premiumroute');
+const passwordRoutes=require('./routes/passwordroute');
 
 app.use(bodyParser.json({ extended: false }));
   
@@ -24,8 +25,9 @@ Order.belongsTo(User);
 User.hasMany(Order);
 
 app.use(userRoutes);
-app.use(expenseRoutes);
+app.use("/expense",expenseRoutes);
 app.use("/purchase",purchaseRoutes);
+app.use("/password",passwordRoutes);
 app.use(leaderRoutes);
 
 sequelize.sync().then(result=>{
