@@ -1,8 +1,14 @@
 const Expense = require('../models/expenses');
 const sequelize = require('../util/databases');
 
+
+
+
+
 exports.postExp = async (req,res,next)=>{
+  
   try{
+    var t= await sequelize.transaction();
   const amount = req.body.amount;
   const description = req.body.description;
   const category = req.body.category;
@@ -14,20 +20,20 @@ exports.postExp = async (req,res,next)=>{
     amount:amount,
     description:description,
     category:category
-  });
+  },{transaction:t});
   console.log(data.amount);
- 
-  const user=await req.user.get();
-  console.log(user.totalexpense);
-  const value=parseFloat(user.totalexpense)+parseFloat(data.amount);
+  console.log(req.user.totalexpense);
+  const value=parseFloat(req.user.totalexpense)+parseFloat(data.amount);
   console.log(value);
   await req.user.update({
     totalexpense:value
-  })
+  },{transaction:t})
+  await t.commit();
   res.status(201).json({newExpense:data});
 }
 catch(err)
-{
+{   
+    await t.rollback();
     console.log(err);
     res.status(505).json({error:err});
 }
@@ -51,16 +57,21 @@ exports.getAllExp=async (req,res,next)=>{
  exports.deleteExp=async (req,res,next)=>{
 
     try{
+      var t= await sequelize.transaction();
       const uid=req.params.id;
-      const user=await req.user.getExpenses({where:{id:uid}});
-      console.log(1121);
-      console.log(user);
-      await user[0].destroy()
-      console.log(uid);
+      const user=await req.user.getExpenses({where:{id:uid},transaction:t});
+      const value=parseFloat(req.user.totalexpense)-parseFloat(user[0].amount);
+      await user[0].destroy({transaction:t})
+      console.log(value);
+      await req.user.update({
+        totalexpense:value
+      },{transaction:t})
+      await t.commit();
       res.status(201).json("success");
     }
     catch(err)
-    {
+    {   
+        await t.rollback();
         res.status(505).json({error:err});
     }
 }
