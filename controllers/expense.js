@@ -57,21 +57,20 @@ exports.getAllExp=async (req,res,next)=>{
  exports.deleteExp=async (req,res,next)=>{
 
     try{
-      var t= await sequelize.transaction();
-      const uid=req.params.id;
-      const user=await req.user.getExpenses({where:{id:uid},transaction:t});
-      const value=parseFloat(req.user.totalexpense)-parseFloat(user[0].amount);
-      await user[0].destroy({transaction:t})
-      console.log(value);
-      await req.user.update({
-        totalexpense:value
-      },{transaction:t})
-      await t.commit();
+      await sequelize.transaction(async(t)=>{
+        const uid=req.params.id;
+        const user=await req.user.getExpenses({where:{id:uid},transaction:t});
+        const value=parseFloat(req.user.totalexpense)-parseFloat(user[0].amount);
+        await user[0].destroy({transaction:t})
+        console.log(value);
+        await req.user.update({
+          totalexpense:value
+        },{transaction:t})
+      });
       res.status(201).json("success");
     }
     catch(err)
     {   
-        await t.rollback();
         res.status(505).json({error:err});
     }
 }
