@@ -7,10 +7,10 @@ const router = express.Router();
 
 
 
-router.post('/expense/add',userAuth.authenticate, expController.postExp);
+router.post('/addexpense',userAuth.authenticate, expController.postExp);
 
-router.get('/expense',userAuth.authenticate,expController.getAllExp);
+router.get('/',userAuth.authenticate,expController.getAllExp);
 
-router.get('/expense/delete/:id',userAuth.authenticate,expController.deleteExp);
+router.get('/deleteexpense/:id',userAuth.authenticate,expController.deleteExp);
 
 module.exports = router;

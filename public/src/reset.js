@@ -23,7 +23,7 @@ async function resetPassword(e)
 
        console.log(resp);
        alert("Password changed successfully");
-      window.location.replace("http://localhost:3000/login.html");
+      window.location.replace("/login");
     }
     catch(err){
          console.log(err);

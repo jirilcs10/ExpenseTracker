@@ -4,7 +4,6 @@ const sequelize = require('../util/databases');
 
 
 
-
 exports.postExp = async (req,res,next)=>{
   
   try{

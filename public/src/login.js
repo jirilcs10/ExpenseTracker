@@ -19,7 +19,9 @@ async function login(e)
        const resp =await axios.post(`http://localhost:3000/user/login`,obj);
 
        console.log(resp);
-       alert(resp.data);
+       alert(resp.data.message);
+       localStorage.setItem('token',resp.data.token)
+      window.location.replace("/features");
     }
     catch(err){
           const error=JSON.stringify(err.message);

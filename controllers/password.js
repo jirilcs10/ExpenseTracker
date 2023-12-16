@@ -52,15 +52,13 @@ exports.resetPassword=async(req,res,next)=>{
     console.log(uuid);
     const request=await Requestpassword.findByPk(uuid);
     console.log(request);
-    if (request.isactive) {
-        request.isactive = false;
-        await request.save();
+    if (request&&request.isactive) {
         console.log(__dirname);
         res.sendFile('reset.html',{root:'views'});
     } 
     else {
          res.status(401).json({ message: "Password reset link expired" })
-         res.redirect('/login');
+         res.redirect('/signup');
     }
 }
 exports.updatePassword=async(req,res,next)=>{
@@ -68,9 +66,11 @@ try{
     const {uuid,password}=req.body;
     const hash=await bcrypt.hash(password,10);
     const reset = await Requestpassword.findByPk(uuid);
+    reset.isactive = false;
+    await reset.save();
     await User.update({password: hash},{where: { id: reset.userId }});
     res.status(200).json({ message:"Success"});
-    res.redirect('/login');
+    
 }
 
 catch(err) 

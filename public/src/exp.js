@@ -3,8 +3,6 @@
 const form=document.getElementById("addForm");
 let itli=document.getElementById("items");
 let ldit=document.getElementById("lditems");
-let reportdiv=document.getElementById('reportdiv');
-reportdiv.style.display='none';
 let lddiv=document.getElementById('leaderboard');
 lddiv.style.display='none';
 form.addEventListener("submit",submitForm);
@@ -36,7 +34,7 @@ function checkPremium(){
        span.appendChild(ldbutton);
        div.appendChild(span);
        ldbutton.onclick=async function(e){
-        const res=await axios.get('http://localhost:3000/leaderboard',{headers:{"Authorization":token}});
+        const res=await axios.get('http://localhost:3000/user/leaderboard',{headers:{"Authorization":token}});
         ldit.replaceChildren(" ");
         for(var i=0;i<res.data.allExpense.length;i++)
         {
@@ -50,20 +48,25 @@ function checkPremium(){
 function generateReport(){
     const token=localStorage.getItem('token');
     const user=parseJwt(token);
-
-       const rpbutton=document.getElementById("reportgen");
+    if(user.isPremiumUser)
+    {
+        const div=document.getElementById("reportbuttondiv");
+        const rpbutton=document.createElement("button");
+        rpbutton.appendChild(document.createTextNode("Generate Report"));
+        const span=document.createElement('span');
+       span.appendChild(rpbutton);
+       span.style.float="right";
+        div.appendChild(span);
+    
+      
        rpbutton.onclick=async function(e){
-        // const res=await axios.get('http://localhost:3000/report',{headers:{"Authorization":token}});
-        reportdiv.style.display="block";
-        if(user.isPremiumUser)
-        {
-            const download=document.createElement('button');
-            const span=document.createElement('span');
-            download.appendChild(document.createTextNode('Download'));
-            span.appendChild(download);
-            span.style.float="right";
-            reportdiv.appendChild(span);
-        }
+        const resp=await axios.get('http://localhost:3000/user/report',{headers:{"Authorization":token}});
+       console.log(resp);
+       const a = document.createElement("a");
+            a.href = resp.data.fileURL;
+            a.download = 'expense.csv';
+            a.click();
+    }  
        }
     
 }
@@ -123,7 +126,7 @@ async function submitForm(e)
     {
         const token=localStorage.getItem('token'); 
         console.log(token);
-    resp =await axios.post(`http://localhost:3000/expense/add`,obj,{headers:{"Authorization":token}}); 
+    resp =await axios.post(`http://localhost:3000/user/addexpense`,obj,{headers:{"Authorization":token}}); 
     
     console.log(resp.data.newExpense);
     showOnScreen(resp.data.newExpense);
@@ -145,7 +148,7 @@ window.addEventListener("DOMContentLoaded",async()=>{
         const token=localStorage.getItem('token');
         checkPremium();
         generateReport();
-    let res=await axios.get('http://localhost:3000/expense',{headers:{"Authorization":token}});
+    let res=await axios.get('http://localhost:3000/user',{headers:{"Authorization":token}});
         console.log(res);
         for(var i=0;i<res.data.newExpense.length;i++)
         showOnScreen(res.data.newExpense[i]);
@@ -168,7 +171,7 @@ async function removeItem(e){
             const id=li.childNodes[6].textContent;
             console.log(id);
             try{
-            await axios.get(`http://localhost:3000/expense/delete/${id}`,{headers:{"Authorization":token}});
+            await axios.get(`http://localhost:3000/user/deleteexpense/${id}`,{headers:{"Authorization":token}});
             itli.removeChild(li); 
             }
             catch(err)
