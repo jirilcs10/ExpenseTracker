@@ -3,6 +3,10 @@
 const form=document.getElementById("addForm");
 let itli=document.getElementById("items");
 let ldit=document.getElementById("lditems");
+let reportdiv=document.getElementById('reportdiv');
+reportdiv.style.display='none';
+let lddiv=document.getElementById('leaderboard');
+lddiv.style.display='none';
 form.addEventListener("submit",submitForm);
 
 
@@ -39,8 +43,29 @@ function checkPremium(){
         console.log(res.data.allExpense[i]);
         showLeaderBoard(res.data.allExpense[i]);
         }
+        lddiv.style.display="block";
        }
     }
+}
+function generateReport(){
+    const token=localStorage.getItem('token');
+    const user=parseJwt(token);
+
+       const rpbutton=document.getElementById("reportgen");
+       rpbutton.onclick=async function(e){
+        // const res=await axios.get('http://localhost:3000/report',{headers:{"Authorization":token}});
+        reportdiv.style.display="block";
+        if(user.isPremiumUser)
+        {
+            const download=document.createElement('button');
+            const span=document.createElement('span');
+            download.appendChild(document.createTextNode('Download'));
+            span.appendChild(download);
+            span.style.float="right";
+            reportdiv.appendChild(span);
+        }
+       }
+    
 }
 function showLeaderBoard(appdata){
     const li=document.createElement("li");
@@ -119,6 +144,7 @@ window.addEventListener("DOMContentLoaded",async()=>{
     try{
         const token=localStorage.getItem('token');
         checkPremium();
+        generateReport();
     let res=await axios.get('http://localhost:3000/expense',{headers:{"Authorization":token}});
         console.log(res);
         for(var i=0;i<res.data.newExpense.length;i++)
