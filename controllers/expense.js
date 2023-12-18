@@ -42,7 +42,8 @@ exports.getAllExp=async (req,res,next)=>{
     
     try{
         const page=req.query.page;
-        let noItems=10;
+        const noItems=Number(req.query.rows);
+        console.log("sadsa"+noItems);
         const total=await Expense.count({where:{userId:req.user.id}});
         console.log(total);
         const data=await Expense.findAll({where:{userId:req.user.id},

@@ -5,6 +5,7 @@ let itli=document.getElementById("items");
 let ldit=document.getElementById("lditems");
 let lddiv=document.getElementById('leaderboard');
 const pagediv=document.getElementById('pagediv');
+
 lddiv.style.display='none';
 form.addEventListener("submit",submitForm);
 
@@ -151,7 +152,9 @@ window.addEventListener("DOMContentLoaded",async()=>{
         checkPremium();
         generateReport();
         const page=1;
-    let res=await axios.get(`http://localhost:3000/user?page=${page}`,{headers:{"Authorization":token}});
+        const rows =document.getElementById('noitems').value;
+        console.log(rows);
+    let res=await axios.get(`http://localhost:3000/user?page=${page}&rows=${rows}`,{headers:{"Authorization":token}});
         console.log(res);
         itli.replaceChildren('');
         for(let i=0;i<res.data.allExpense.length;i++)
@@ -168,7 +171,8 @@ window.addEventListener("DOMContentLoaded",async()=>{
 async function getExpense(page){
     const token=localStorage.getItem('token');
     itli.replaceChildren('');
-   const res=await axios.get(`http://localhost:3000/user?page=${page}`,{headers:{"Authorization":token}});
+    const rows=document.getElementById('noitems').value;
+   const res=await axios.get(`http://localhost:3000/user?page=${page}&rows=${rows}`,{headers:{"Authorization":token}});
    for(var i=0;i<res.data.allExpense.length;i++)
         showOnScreen(res.data.allExpense[i]);
 
@@ -181,26 +185,26 @@ function showPage(pageData){
     if(pageData.hasPrevPage){
         const btn=document.createElement("button");
         btn.innerHTML=pageData.prevPage;
-        btn.style.width='5%';
+        btn.style.width='10%';
         btn.addEventListener('click',()=>getExpense(pageData.prevPage));
         pagediv.appendChild(btn);
     }
     const btn=document.createElement("button");
         btn.innerHTML=pageData.currPage;
-        btn.style.width='5%';
+        btn.style.width='10%';
         btn.addEventListener('click',()=>getExpense(pageData.currPage));
         pagediv.appendChild(btn);
     if(pageData.hasNextPage){
             const btn=document.createElement("button");
             btn.innerHTML=pageData.nextPage;
-            btn.style.width='5%';
+            btn.style.width='10%';
             btn.addEventListener('click',()=>getExpense(pageData.nextPage));
             pagediv.appendChild(btn);
         } 
         if(pageData.lastPage>pageData.nextPage){
         const last=document.createElement("button");
         last.innerHTML=pageData.lastPage;
-        last.style.width='5%';
+        last.style.width='10%';
         last.addEventListener('click',()=>getExpense(pageData.lastPage));
         pagediv.appendChild(last);  
         }
