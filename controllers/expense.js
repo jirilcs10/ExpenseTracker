@@ -41,10 +41,19 @@ catch(err)
 exports.getAllExp=async (req,res,next)=>{
     
     try{
-        
-        const data=await Expense.findAll({where:{userId:req.user.id}});
+        const page=req.query.page;
+        let noItems=10;
+        const total=await Expense.count({where:{userId:req.user.id}});
+        console.log(total);
+        const data=await Expense.findAll({where:{userId:req.user.id},
+          limit:noItems,offset:(page-1)*noItems});
         console.log(data);
-        res.status(201).json({newExpense:data})
+        res.status(201).json({allExpense:data,pageData:{currPage:page,hasNextPage:noItems*page<total,
+        nextPage:Number(page)+1,
+        hasPrevPage:page>1,
+        prevPage:page-1,
+        lastPage:Math.ceil(total/noItems),}
+        })
       }
       catch(err)
       {

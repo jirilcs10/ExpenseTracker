@@ -4,6 +4,7 @@ const form=document.getElementById("addForm");
 let itli=document.getElementById("items");
 let ldit=document.getElementById("lditems");
 let lddiv=document.getElementById('leaderboard');
+const pagediv=document.getElementById('pagediv');
 lddiv.style.display='none';
 form.addEventListener("submit",submitForm);
 
@@ -84,6 +85,7 @@ function showLeaderBoard(appdata){
     ldit.appendChild(li);
 }
 function showOnScreen(appdata){
+    
     const li=document.createElement("li");
     const btn=document.createElement("button");
     const hid=document.createElement("P");
@@ -148,16 +150,61 @@ window.addEventListener("DOMContentLoaded",async()=>{
         const token=localStorage.getItem('token');
         checkPremium();
         generateReport();
-    let res=await axios.get('http://localhost:3000/user',{headers:{"Authorization":token}});
+        const page=1;
+    let res=await axios.get(`http://localhost:3000/user?page=${page}`,{headers:{"Authorization":token}});
         console.log(res);
-        for(var i=0;i<res.data.newExpense.length;i++)
-        showOnScreen(res.data.newExpense[i]);
+        itli.replaceChildren('');
+        for(let i=0;i<res.data.allExpense.length;i++)
+        showOnScreen(res.data.allExpense[i]);
+
+
+        showPage(res.data.pageData);
     }
     catch(err){
         document.body.innerHTML=document.body.innerHTML+"<h3 align='center'>something went wrong</h3>"
         console.log(err);
     }
 });
+async function getExpense(page){
+    const token=localStorage.getItem('token');
+    itli.replaceChildren('');
+   const res=await axios.get(`http://localhost:3000/user?page=${page}`,{headers:{"Authorization":token}});
+   for(var i=0;i<res.data.allExpense.length;i++)
+        showOnScreen(res.data.allExpense[i]);
+
+   showPage(res.data.pageData);
+
+}
+
+function showPage(pageData){
+    pagediv.replaceChildren('');
+    if(pageData.hasPrevPage){
+        const btn=document.createElement("button");
+        btn.innerHTML=pageData.prevPage;
+        btn.style.width='5%';
+        btn.addEventListener('click',()=>getExpense(pageData.prevPage));
+        pagediv.appendChild(btn);
+    }
+    const btn=document.createElement("button");
+        btn.innerHTML=pageData.currPage;
+        btn.style.width='5%';
+        btn.addEventListener('click',()=>getExpense(pageData.currPage));
+        pagediv.appendChild(btn);
+    if(pageData.hasNextPage){
+            const btn=document.createElement("button");
+            btn.innerHTML=pageData.nextPage;
+            btn.style.width='5%';
+            btn.addEventListener('click',()=>getExpense(pageData.nextPage));
+            pagediv.appendChild(btn);
+        } 
+        if(pageData.lastPage>pageData.nextPage){
+        const last=document.createElement("button");
+        last.innerHTML=pageData.lastPage;
+        last.style.width='5%';
+        last.addEventListener('click',()=>getExpense(pageData.lastPage));
+        pagediv.appendChild(last);  
+        }
+}
 
 itli.addEventListener("click", removeItem);
 async function removeItem(e){
