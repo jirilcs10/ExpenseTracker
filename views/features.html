@@ -65,9 +65,9 @@
   </div>
   <div class="card card-body w-75 mx-auto">
     <label for="noitems">Number of Items per page:</label>
-<select name="noitems" id="noitems">
+<select name="noitems" id="noitems" onchange="storeRows()" >
   <option value="5">5</option>
-  <option value="10" selected>10</option>
+  <option value="10">10</option>
   <option value="20">20</option>
   <option value="30">30</option>
   <option value="40">40</option>
@@ -75,7 +75,7 @@
 </select>
     <ul id="items" class="list-group">
     </ul>
-    <footer id="pagediv" style="align-self:center;">
+    <footer id="pagediv" style="align-items: center;">
     </footer>  
   </div>
   

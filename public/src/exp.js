@@ -8,7 +8,11 @@ const pagediv=document.getElementById('pagediv');
 
 lddiv.style.display='none';
 form.addEventListener("submit",submitForm);
-
+function storeRows(e){
+    const rows=document.getElementById("noitems").value;
+    localStorage.setItem("rows",rows);
+    location.reload();
+}
 
 function parseJwt(token) {
         if (!token) {
@@ -152,8 +156,10 @@ window.addEventListener("DOMContentLoaded",async()=>{
         checkPremium();
         generateReport();
         const page=1;
-        const rows =document.getElementById('noitems').value;
+        const rows =localStorage.getItem('rows');
         console.log(rows);
+        if(rows){
+        document.getElementById('noitems').value=rows;}
     let res=await axios.get(`http://localhost:3000/user?page=${page}&rows=${rows}`,{headers:{"Authorization":token}});
         console.log(res);
         itli.replaceChildren('');
@@ -171,7 +177,8 @@ window.addEventListener("DOMContentLoaded",async()=>{
 async function getExpense(page){
     const token=localStorage.getItem('token');
     itli.replaceChildren('');
-    const rows=document.getElementById('noitems').value;
+    const rows =localStorage.getItem('rows');
+    
    const res=await axios.get(`http://localhost:3000/user?page=${page}&rows=${rows}`,{headers:{"Authorization":token}});
    for(var i=0;i<res.data.allExpense.length;i++)
         showOnScreen(res.data.allExpense[i]);
@@ -185,26 +192,30 @@ function showPage(pageData){
     if(pageData.hasPrevPage){
         const btn=document.createElement("button");
         btn.innerHTML=pageData.prevPage;
-        btn.style.width='10%';
+        btn.style.width='5%';
+        btn.style.alignSelf="center";
         btn.addEventListener('click',()=>getExpense(pageData.prevPage));
         pagediv.appendChild(btn);
     }
     const btn=document.createElement("button");
         btn.innerHTML=pageData.currPage;
-        btn.style.width='10%';
+        btn.style.width='5%';
+        btn.style.alignSelf="center";
         btn.addEventListener('click',()=>getExpense(pageData.currPage));
         pagediv.appendChild(btn);
     if(pageData.hasNextPage){
             const btn=document.createElement("button");
             btn.innerHTML=pageData.nextPage;
-            btn.style.width='10%';
+            btn.style.width='5%';
+            btn.style.alignSelf="center";
             btn.addEventListener('click',()=>getExpense(pageData.nextPage));
             pagediv.appendChild(btn);
         } 
         if(pageData.lastPage>pageData.nextPage){
         const last=document.createElement("button");
-        last.innerHTML=pageData.lastPage;
-        last.style.width='10%';
+        last.innerHTML=">>";
+        last.style.width='5%';
+        last.style.alignSelf="center";
         last.addEventListener('click',()=>getExpense(pageData.lastPage));
         pagediv.appendChild(last);  
         }
