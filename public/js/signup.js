@@ -19,7 +19,7 @@ async function signup(e)
     let resp;
     try
     {
-       resp =await axios.post(`http://localhost:3000/user/signup`,obj);
+       resp =await axios.post(`/user/signup`,obj);
        console.log(resp);
     }
     catch(err){

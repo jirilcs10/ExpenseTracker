@@ -19,7 +19,7 @@ async function resetPassword(e)
     console.log(obj);
     try
     {
-       const resp =await axios.post(`http://localhost:3000/password/updatepassword`,obj);
+       const resp =await axios.post(`/password/updatepassword`,obj);
 
        console.log(resp);
        alert("Password changed successfully");

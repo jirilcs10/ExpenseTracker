@@ -16,7 +16,7 @@ async function login(e)
     obj.password=document.getElementById('password').value;
     try
     {
-       const resp =await axios.post(`http://localhost:3000/user/login`,obj);
+       const resp =await axios.post(`/user/login`,obj);
 
        console.log(resp);
        alert(resp.data.message);

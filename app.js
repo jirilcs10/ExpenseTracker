@@ -27,18 +27,18 @@ const passwordRoutes=require('./routes/passwordroute');
 const logStream=fs.createWriteStream(path.join(__dirname,'access.log'),{flags:'a'});
 let errorobj;
 app.use(cors());
-app.use(helmet({
-    contentSecurityPolicy: {
-         useDefaults: true,
-        directives: {
-            "script-src": ["'self'", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js","https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js","https://checkout.razorpay.com/v1/checkout.js",'https://api.razorpay.com/*','*.razorpay.com/*'],
-             "frame-src":["'self'","https://api.razorpay.com",'*.razorpay.com/*'],
-             'connect-src':["'self'",'https://api.razorpay.com','*.razorpay.com'],
-             }
-            },
+// app.use(helmet({
+//     contentSecurityPolicy: {
+//          useDefaults: true,
+//         directives: {
+//             "script-src": ["'self'", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js","https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js","https://checkout.razorpay.com/v1/checkout.js",'https://api.razorpay.com/*','*.razorpay.com/*'],
+//              "frame-src":["'self'","https://api.razorpay.com",'*.razorpay.com/*'],
+//              'connect-src':["'self'",'https://api.razorpay.com','*.razorpay.com'],
+//              }
+//             },
             
             
-      }));
+//       }));
 
 
 app.use(morgan('combined',{stream:logStream}));

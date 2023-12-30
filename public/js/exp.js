@@ -43,7 +43,7 @@ function checkPremium(){
        span.appendChild(ldbutton);
        div.appendChild(span);
        ldbutton.onclick=async function(e){
-        const res=await axios.get('http://localhost:3000/user/leaderboard',{headers:{"Authorization":token}});
+        const res=await axios.get('user/leaderboard',{headers:{"Authorization":token}});
         ldit.replaceChildren(" ");
         for(var i=0;i<res.data.allExpense.length;i++)
         {
@@ -72,7 +72,7 @@ function generateReport(){
     
       
        rpbutton.onclick=async function(e){
-        const resp=await axios.get('http://localhost:3000/user/report',{headers:{"Authorization":token}});
+        const resp=await axios.get('/user/report',{headers:{"Authorization":token}});
        console.log(resp);
        const a = document.createElement("a");
             a.href = resp.data.fileURL;
@@ -82,7 +82,7 @@ function generateReport(){
     dhbutton.onclick=async function(e){
         dhdiv.replaceChildren('');
         dhdiv.style.display="block";
-        const resp=await axios.get('http://localhost:3000/user/reporthistory',{headers:{"Authorization":token}});
+        const resp=await axios.get('/user/reporthistory',{headers:{"Authorization":token}});
         dhdiv.appendChild(document.createTextNode("Download History"));
         for(let i=0;i<resp.data.history.length;i++)
         {
@@ -171,7 +171,7 @@ async function submitForm(e)
     {
         const token=localStorage.getItem('token'); 
         console.log(token);
-    await axios.post(`http://localhost:3000/user/addexpense`,obj,{headers:{"Authorization":token}}); 
+    await axios.post(`/user/addexpense`,obj,{headers:{"Authorization":token}}); 
     
     location.reload();
     }
@@ -199,7 +199,7 @@ window.addEventListener("DOMContentLoaded",async()=>{
         console.log(rows);
         if(rows){
         document.getElementById('noitems').value=rows;}
-    let res=await axios.get(`http://localhost:3000/user?page=${page}&rows=${rows}`,{headers:{"Authorization":token}});
+    let res=await axios.get(`/user?page=${page}&rows=${rows}`,{headers:{"Authorization":token}});
         console.log(res);
         itli.replaceChildren('');
         for(let i=0;i<res.data.allExpense.length;i++)
@@ -218,7 +218,7 @@ async function getExpense(page){
     itli.replaceChildren('');
     const rows =localStorage.getItem('rows');
     
-   const res=await axios.get(`http://localhost:3000/user?page=${page}&rows=${rows}`,{headers:{"Authorization":token}});
+   const res=await axios.get(`/user?page=${page}&rows=${rows}`,{headers:{"Authorization":token}});
    for(var i=0;i<res.data.allExpense.length;i++)
         showOnScreen(res.data.allExpense[i]);
 
@@ -272,7 +272,7 @@ async function removeItem(e){
             const id=li.childNodes[6].textContent;
             console.log(id);
             try{
-            await axios.get(`http://localhost:3000/user/deleteexpense/${id}`,{headers:{"Authorization":token}});
+            await axios.get(`/user/deleteexpense/${id}`,{headers:{"Authorization":token}});
             itli.removeChild(li); 
             }
             catch(err)
@@ -290,14 +290,14 @@ async function removeItem(e){
 document.getElementById('rzp-premium').onclick=async function(e){
     try{
     const token=localStorage.getItem('token');
-    const res=await axios.get('http://localhost:3000/purchase/buypremium',{headers:{"Authorization":token}});
+    const res=await axios.get('/purchase/buypremium',{headers:{"Authorization":token}});
     console.log(res.data);
     let resp;
     var options={
         'key':res.data.key_id,
         'order_id':res.data.order.id,
         'handler':async function(response){
-           resp = await axios.post('http://localhost:3000/purchase/updatetransactionstatus?success=true',{
+           resp = await axios.post('/purchase/updatetransactionstatus?success=true',{
                 orderId:options.order_id,
                 paymentId:response.razorpay_payment_id
             },{headers:{"Authorization":token}})
@@ -311,7 +311,7 @@ document.getElementById('rzp-premium').onclick=async function(e){
     e.preventDefault();
     rzp1.on('payment.failed',async function(res){
         console.log(res);
-        await axios.post('http://localhost:3000/purchase/updatetransactionstatus?success=false',{
+        await axios.post('/purchase/updatetransactionstatus?success=false',{
             orderId:options.order_id
         },{headers:{"Authorization":token}})
         alert('Something went wrong');

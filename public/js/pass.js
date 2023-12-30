@@ -14,7 +14,7 @@ async function forgotPassword(e)
     obj.email=document.getElementById('email').value;
     try
     {
-       const resp =await axios.post(`http://localhost:3000/password/forgotpassword`,obj);
+       const resp =await axios.post(`/password/forgotpassword`,obj);
 
        console.log(resp);
        alert("Reset Password Link send to your mail address");
