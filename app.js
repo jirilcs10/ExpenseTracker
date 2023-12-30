@@ -86,16 +86,14 @@ app.use('/forgotpassword',(req,res)=>{
 // app.get('/public/js/reset.js', function(req, res) {
 //     res.sendFile(path.join(__dirname + '/public/js/reset.js'));
 // });
-app.use('/csperror',(req,res,next)=>{
-    console.log(req);
-})
+
 app.use(userRoutes);
 app.use("/user",expenseRoutes);
 app.use("/purchase",purchaseRoutes);
 app.use("/password",passwordRoutes);
 app.use("/user",premiumRoutes);
 
-console.log(errorobj);
+
 sequelize.sync().then(result=>{
     app.listen(process.env.PORT||3000);
 }).catch(err=>console.log(err));
