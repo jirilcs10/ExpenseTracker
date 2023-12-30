@@ -88,6 +88,7 @@ function generateReport(){
         {
           console.log(resp.data.history[i]);
           const fileURL=resp.data.history[i].downloadURL;
+          console.log(fileURL);
           let fname=fileURL.split('/');
           fname=fname[fname.length-1];
           fname=fname.slice(0,24);
@@ -192,7 +193,9 @@ window.addEventListener("DOMContentLoaded",async()=>{
         checkPremium();
         generateReport();
         const page=1;
-        const rows =localStorage.getItem('rows');
+        let rows=localStorage.getItem('rows');
+        if(rows==null)
+        rows=5;
         console.log(rows);
         if(rows){
         document.getElementById('noitems').value=rows;}
